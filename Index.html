@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SheetsTalk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #101114;
+        --surface: #171a1f;
+        --surface-2: #1d2128;
+        --surface-3: #12151a;
+        --text: #f3f6fc;
+        --muted: #aab2bf;
+        --line: #2b3039;
+        --line-strong: #3a404b;
+        --primary: #5f71ff;
+        --accent: #3a95ff;
+        --danger: #d35763;
+        --ok: #3ca573;
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: 'Manrope', sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+
+      .app {
+        width: min(1220px, 100% - 24px);
+        margin: 16px auto 20px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .wizard {
+        padding: 20px;
+        max-width: 780px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .wizard-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .wizard-head h1 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 30px;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+      }
+
+      .wizard-head p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .wizard-head-right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .wizard-step {
+        display: grid;
+        gap: 12px;
+      }
+
+      .mode-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .mode-card {
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--surface-2);
+        color: var(--text);
+        padding: 14px;
+        cursor: pointer;
+        text-align: left;
+        transition: border-color 160ms ease, background-color 160ms ease;
+      }
+
+      .mode-card:hover {
+        border-color: #6a7383;
+        background: #242a33;
+      }
+
+      .mode-card h3 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 18px;
+        color: #ffffff;
+      }
+
+      .mode-card p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #e6ebf5;
+      }
+
+      .field input,
+      .field textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--line-strong);
+        padding: 11px 12px;
+        font: inherit;
+        color: var(--text);
+        background: var(--surface-3);
+      }
+
+      .field textarea {
+        min-height: 84px;
+        resize: vertical;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: start;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .join-hint {
+        border: 1px dashed var(--line-strong);
+        border-radius: 10px;
+        background: #1b1f26;
+        padding: 10px;
+        font-size: 13px;
+        color: #d3d9e3;
+      }
+
+      .status {
+        font-size: 13px;
+        color: #d7def1;
+        background: #252d3a;
+        border: 1px solid #3e4959;
+        padding: 7px 11px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .status.error {
+        color: #ffe2e7;
+        border-color: #74424b;
+        background: #3a2429;
+      }
+
+      .status.ok {
+        color: #d8f6e6;
+        border-color: #2f6548;
+        background: #1f3529;
+      }
+
+      .wizard-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .invite-preview {
+        border: 1px solid var(--line-strong);
+        border-radius: 10px;
+        background: #1a1d24;
+        padding: 10px;
+      }
+
+      .invite-preview code {
+        display: block;
+        font-size: 12px;
+        color: #d5dce8;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .chat {
+        min-height: min(86vh, 940px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .chat-shell {
+        display: grid;
+        grid-template-columns: 288px 1fr;
+        min-height: inherit;
+      }
+
+      .chat-sidebar {
+        border-right: 1px solid var(--line);
+        background: var(--surface-2);
+        padding: 14px 12px;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 12px;
+      }
+
+      .sidebar-head h2 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 21px;
+        line-height: 1.15;
+        color: #ffffff;
+      }
+
+      .sidebar-head p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .sidebar-meta {
+        display: grid;
+        gap: 8px;
+      }
+
+      .fingerprint {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 12px;
+        color: #d8deec;
+        background: #222936;
+        border: 1px solid #384456;
+        padding: 8px 10px;
+        border-radius: 10px;
+        word-break: break-all;
+      }
+
+      .sidebar-actions {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+      }
+
+      #chatPanel.sidebar-hidden .chat-shell {
+        grid-template-columns: 1fr;
+      }
+
+      #chatPanel.sidebar-hidden .chat-sidebar {
+        display: none;
+      }
+
+      .chat-main {
+        display: grid;
+        grid-template-rows: auto 1fr auto auto;
+        min-height: 0;
+        background: var(--surface-3);
+      }
+
+      .chat-header {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sidebar-toggle {
+        flex-shrink: 0;
+      }
+
+      .chat-main-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 15px;
+        color: #e3e9f7;
+      }
+
+      .messages {
+        padding: 14px clamp(14px, 8vw, 120px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .placeholder {
+        text-align: center;
+        color: var(--muted);
+        padding: 22px 10px;
+        border-radius: 12px;
+        border: 1px dashed var(--line-strong);
+        background: #1a1f26;
+      }
+
+      .msg {
+        max-width: min(76%, 620px);
+        border-radius: 14px;
+        border: 1px solid #323844;
+        padding: 10px 12px;
+        background: #1f242d;
+      }
+
+      .msg.self {
+        margin-left: auto;
+        border-color: #4b5f89;
+        background: #273040;
+      }
+
+      .msg-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+        font-size: 12px;
+        color: #aeb7c5;
+      }
+
+      .msg-right {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+      }
+
+      .msg-time {
+        color: #a7b0be;
+      }
+
+      .msg-state {
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: #293347;
+        color: #dbe4fc;
+      }
+
+      .msg-state[data-state='sending'] {
+        color: #ffe6af;
+        background: #4e3f1f;
+      }
+
+      .msg-state[data-state='sent'] {
+        color: #dbe4fc;
+        background: #293347;
+      }
+
+      .msg-state[data-state='delivered'] {
+        color: #d4f6e4;
+        background: #204230;
+      }
+
+      .msg-state[data-state='read'] {
+        color: #d8f6e7;
+        background: #1c5037;
+      }
+
+      .msg-state[data-state='error'] {
+        color: #ffd9de;
+        background: #4b2830;
+      }
+
+      .msg-text {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 14px;
+      }
+
+      .msg audio {
+        width: 100%;
+        margin-top: 2px;
+      }
+
+      .event-row {
+        margin: 0 auto;
+        border: 1px solid #3c4451;
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+        color: #d0d7e2;
+        background: #222833;
+      }
+
+      .composer {
+        border-top: 1px solid var(--line);
+        padding: 12px 14px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        background: #12161d;
+      }
+
+      .composer textarea {
+        width: 100%;
+        min-height: 56px;
+        max-height: 180px;
+        border-radius: 10px;
+        border: 1px solid var(--line-strong);
+        padding: 11px 12px;
+        font: inherit;
+        color: var(--text);
+        background: #181c24;
+        resize: vertical;
+      }
+
+      .audio-tools {
+        border-top: 1px solid var(--line);
+        padding: 10px 14px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: #12161d;
+      }
+
+      .audio-state {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      button {
+        border: 1px solid transparent;
+        border-radius: 10px;
+        min-height: 44px;
+        padding: 0 14px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        border-color: #7483ff;
+        color: #ffffff;
+      }
+
+      .btn-primary:hover {
+        background: #6f7dff;
+      }
+
+      .btn-secondary {
+        background: #242a33;
+        color: #f0f4fb;
+        border-color: var(--line-strong);
+      }
+
+      .btn-secondary:hover {
+        background: #2a313c;
+      }
+
+      .btn-accent {
+        background: var(--accent);
+        border-color: #64aefe;
+        color: #ffffff;
+      }
+
+      .btn-accent:hover {
+        background: #4ca0ff;
+      }
+
+      .btn-danger {
+        background: #362028;
+        border-color: #64404a;
+        color: #ffd9de;
+      }
+
+      .btn-danger:hover {
+        background: #41262f;
+      }
+
+      .icon-btn {
+        width: 44px;
+        min-width: 44px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .icon-btn.is-recording {
+        background: #47242b;
+        border-color: #82515b;
+        color: #ffd8de;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        border: 0;
+        padding: 0;
+        white-space: nowrap;
+        clip-path: inset(100%);
+        clip: rect(0 0 0 0);
+        overflow: hidden;
+      }
+
+      .sidebar-backdrop {
+        display: none;
+      }
+
+      input:focus-visible,
+      textarea:focus-visible,
+      button:focus-visible {
+        outline: 3px solid rgba(124, 140, 255, 0.6);
+        outline-offset: 1px;
+      }
+
+      @media (max-width: 920px) {
+        .wizard {
+          padding: 14px;
+        }
+
+        .row {
+          grid-template-columns: 1fr;
+        }
+
+        .wizard-actions {
+          flex-direction: column;
+        }
+
+        .wizard-actions button {
+          width: 100%;
+        }
+
+        .chat {
+          min-height: 78vh;
+        }
+
+        .chat-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .chat-sidebar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: min(84vw, 300px);
+          z-index: 50;
+          transform: translateX(-100%);
+          transition: transform 170ms ease;
+        }
+
+        #chatPanel.sidebar-open .chat-sidebar {
+          transform: translateX(0);
+        }
+
+        .sidebar-backdrop {
+          display: block;
+          position: absolute;
+          inset: 0;
+          z-index: 40;
+          border: 0;
+          padding: 0;
+          margin: 0;
+          width: 100%;
+          min-height: 100%;
+          background: rgba(0, 0, 0, 0.55);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 170ms ease;
+        }
+
+        #chatPanel.sidebar-open .sidebar-backdrop {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .messages {
+          padding: 12px 12px;
+        }
+
+        .msg {
+          max-width: min(92%, 620px);
+        }
+
+        .composer {
+          grid-template-columns: 1fr;
+        }
+
+        #sendTextBtn {
+          width: 100%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section id="wizardPanel" class="panel wizard">
+        <header class="wizard-head">
+          <div>
+            <h1>SheetsTalk</h1>
+            <p>Мастер настройки безопасного канала: текст + голосовые с E2E-шифрованием.</p>
+          </div>
+          <div class="wizard-head-right">
+            <button id="wizardSettingsBtn" class="btn-secondary icon-btn" type="button" aria-label="Настройки" title="Настройки">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V22a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.74 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.02a1.7 1.7 0 0 0 .98-1.55V2a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 .98 1.55h.02a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.02a1.7 1.7 0 0 0 1.55.98H22a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55.98V15Z"></path>
+              </svg>
+              <span class="sr-only">Настройки</span>
+            </button>
+            <div id="wizardStatus" class="status">Шаг 1 из 2</div>
+          </div>
+        </header>
+
+        <section id="stepChoice" class="wizard-step">
+          <div class="mode-grid">
+            <button id="modeCreateBtn" class="mode-card" type="button">
+              <h3>Создать канал</h3>
+              <p>Сгенерировать room и seed, затем поделиться ими с участниками.</p>
+            </button>
+            <button id="modeJoinBtn" class="mode-card" type="button">
+              <h3>Присоединиться</h3>
+              <p>Вставить invite или вручную ввести room и seed.</p>
+            </button>
+          </div>
+        </section>
+
+        <form id="createForm" class="wizard-step hidden">
+          <div class="field">
+            <label for="createNameInput">Ваш ник</label>
+            <input id="createNameInput" type="text" maxlength="40" placeholder="Lork" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="createRoomInput">Room канала</label>
+            <div class="row">
+              <input id="createRoomInput" type="text" maxlength="64" autocomplete="off" />
+              <button id="regenRoomBtn" class="btn-secondary" type="button">Новый room</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="createSeedInput">Seed канала</label>
+            <div class="row">
+              <input id="createSeedInput" type="text" autocomplete="off" />
+              <button id="regenSeedBtn" class="btn-secondary" type="button">Новый seed</button>
+            </div>
+            <div class="hint">Передавайте room + seed только в доверенном канале.</div>
+          </div>
+
+          <div class="invite-preview">
+            <code id="invitePreview">room: ...\nseed: ...</code>
+          </div>
+
+          <div class="wizard-actions">
+            <button id="copyInviteSetupBtn" class="btn-secondary" type="button">Скопировать invite</button>
+            <button class="btn-primary" type="submit">Создать и войти</button>
+            <button data-back="choice" class="btn-secondary" type="button">Назад</button>
+          </div>
+        </form>
+
+        <form id="joinForm" class="wizard-step hidden">
+          <div class="join-hint">Попросите у создателя канала invite, либо значения <b>room</b> и <b>seed</b>.</div>
+
+          <div class="field">
+            <label for="joinInviteInput">Быстрый invite</label>
+            <textarea id="joinInviteInput" placeholder="Вставьте текст invite целиком"></textarea>
+            <div class="wizard-actions">
+              <button id="parseInviteBtn" class="btn-secondary" type="button">Распарсить invite</button>
+              <button id="pasteInviteBtn" class="btn-secondary" type="button">Вставить из буфера</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="joinNameInput">Ваш ник</label>
+            <input id="joinNameInput" type="text" maxlength="40" placeholder="Steeve" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="joinRoomInput">Room</label>
+            <input id="joinRoomInput" type="text" maxlength="64" placeholder="ch-abc12345" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="joinSeedInput">Seed</label>
+            <input id="joinSeedInput" type="text" placeholder="вставьте seed от создателя" autocomplete="off" />
+          </div>
+
+          <div class="wizard-actions">
+            <button class="btn-primary" type="submit">Присоединиться</button>
+            <button data-back="choice" class="btn-secondary" type="button">Назад</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="chatPanel" class="panel chat hidden">
+        <div class="chat-shell">
+          <aside id="chatSidebar" class="chat-sidebar">
+            <div class="sidebar-head">
+              <h2 id="roomTitle">Secure Room</h2>
+              <p id="roomMeta">Ожидание подключения</p>
+              <p id="creatorSeedLabel" class="hint hidden"></p>
+            </div>
+            <div class="sidebar-meta">
+              <div id="chatStatus" class="status">Ожидание</div>
+              <div id="chatFingerprint" class="fingerprint">Fingerprint: -</div>
+            </div>
+            <div class="sidebar-actions">
+              <button id="copyInviteChatBtn" class="btn-secondary hidden" type="button">Скопировать invite</button>
+              <button id="openStandaloneBtn" class="btn-secondary hidden" type="button">Открыть отдельно</button>
+              <button id="disconnectBtn" class="btn-danger" type="button">Выйти</button>
+              <button id="chatSettingsBtn" class="btn-secondary icon-btn" type="button" aria-label="Настройки" title="Настройки">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V22a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.74 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.02a1.7 1.7 0 0 0 .98-1.55V2a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 .98 1.55h.02a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.02a1.7 1.7 0 0 0 1.55.98H22a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55.98V15Z"></path>
+                </svg>
+                <span class="sr-only">Настройки</span>
+              </button>
+            </div>
+          </aside>
+
+          <div class="chat-main">
+            <header class="chat-header">
+              <button id="sidebarToggleBtn" class="btn-secondary icon-btn sidebar-toggle" type="button" aria-label="Меню" title="Меню">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <line x1="4" y1="7" x2="20" y2="7"></line>
+                  <line x1="4" y1="12" x2="20" y2="12"></line>
+                  <line x1="4" y1="17" x2="20" y2="17"></line>
+                </svg>
+                <span class="sr-only">Меню</span>
+              </button>
+              <div class="chat-main-title">Чат</div>
+            </header>
+
+            <section id="messages" class="messages" aria-live="polite">
+              <div id="placeholder" class="placeholder">После входа появится история сообщений канала.</div>
+            </section>
+
+            <form id="textForm" class="composer">
+              <textarea id="textInput" placeholder="Введите сообщение" disabled></textarea>
+              <button id="sendTextBtn" class="btn-primary" type="submit" disabled>Отправить</button>
+            </form>
+
+            <div class="audio-tools">
+              <button id="grantMicBtn" class="btn-secondary icon-btn" type="button" aria-label="Разрешить микрофон" title="Разрешить микрофон">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="22"></line>
+                  <line x1="8" y1="22" x2="16" y2="22"></line>
+                </svg>
+                <span class="sr-only">Разрешить микрофон</span>
+              </button>
+              <button id="recordBtn" class="btn-accent icon-btn" type="button" aria-label="Записать голосовое" title="Записать голосовое" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="22"></line>
+                  <line x1="8" y1="22" x2="16" y2="22"></line>
+                </svg>
+                <span class="sr-only">Записать голосовое</span>
+              </button>
+              <div id="audioState" class="audio-state">Разрешите микрофон для голосовых заметок.</div>
+            </div>
+          </div>
+        </div>
+        <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Закрыть меню"></button>
+      </section>
+    </main>
+
+    <script>
+      const ui = {
+        wizardPanel: document.getElementById('wizardPanel'),
+        chatPanel: document.getElementById('chatPanel'),
+        wizardStatus: document.getElementById('wizardStatus'),
+        wizardSettingsBtn: document.getElementById('wizardSettingsBtn'),
+
+        stepChoice: document.getElementById('stepChoice'),
+        createForm: document.getElementById('createForm'),
+        joinForm: document.getElementById('joinForm'),
+
+        modeCreateBtn: document.getElementById('modeCreateBtn'),
+        modeJoinBtn: document.getElementById('modeJoinBtn'),
+
+        createNameInput: document.getElementById('createNameInput'),
+        createRoomInput: document.getElementById('createRoomInput'),
+        createSeedInput: document.getElementById('createSeedInput'),
+        regenRoomBtn: document.getElementById('regenRoomBtn'),
+        regenSeedBtn: document.getElementById('regenSeedBtn'),
+        copyInviteSetupBtn: document.getElementById('copyInviteSetupBtn'),
+        invitePreview: document.getElementById('invitePreview'),
+
+        joinInviteInput: document.getElementById('joinInviteInput'),
+        parseInviteBtn: document.getElementById('parseInviteBtn'),
+        pasteInviteBtn: document.getElementById('pasteInviteBtn'),
+        joinNameInput: document.getElementById('joinNameInput'),
+        joinRoomInput: document.getElementById('joinRoomInput'),
+        joinSeedInput: document.getElementById('joinSeedInput'),
+
+        roomTitle: document.getElementById('roomTitle'),
+        roomMeta: document.getElementById('roomMeta'),
+        creatorSeedLabel: document.getElementById('creatorSeedLabel'),
+        chatSidebar: document.getElementById('chatSidebar'),
+        sidebarToggleBtn: document.getElementById('sidebarToggleBtn'),
+        sidebarBackdrop: document.getElementById('sidebarBackdrop'),
+        chatSettingsBtn: document.getElementById('chatSettingsBtn'),
+        copyInviteChatBtn: document.getElementById('copyInviteChatBtn'),
+        disconnectBtn: document.getElementById('disconnectBtn'),
+        chatStatus: document.getElementById('chatStatus'),
+        chatFingerprint: document.getElementById('chatFingerprint'),
+
+        messages: document.getElementById('messages'),
+        textForm: document.getElementById('textForm'),
+        textInput: document.getElementById('textInput'),
+        sendTextBtn: document.getElementById('sendTextBtn'),
+        openStandaloneBtn: document.getElementById('openStandaloneBtn'),
+        grantMicBtn: document.getElementById('grantMicBtn'),
+        recordBtn: document.getElementById('recordBtn'),
+        audioState: document.getElementById('audioState'),
+      };
+
+      const STATUS_RANK = {
+        sending: 0,
+        sent: 1,
+        delivered: 2,
+        read: 3,
+        error: 4,
+      };
+
+      const STATUS_TEXT = {
+        sending: 'Отправляется',
+        sent: 'Отправлено',
+        delivered: 'Доставлено',
+        read: 'Прочитано',
+        error: 'Ошибка',
+      };
+
+      const state = {
+        connected: false,
+        creatorMode: false,
+        leaveEventSent: false,
+        room: '',
+        sender: '',
+        secret: '',
+        key: null,
+        cursor: 1,
+        pollIntervalMs: 450,
+        maxFetch: 80,
+        pollTimer: null,
+        polling: false,
+
+        decryptFailures: 0,
+        successfulDecrypts: 0,
+
+        knownIds: new Set(),
+        knownQueue: [],
+
+        messageNodeById: new Map(),
+        statusNodeById: new Map(),
+        outgoingStateById: new Map(),
+        pendingByCipher: new Map(),
+
+        deliveredReceiptSent: new Set(),
+        readReceiptSent: new Set(),
+
+        eventDedup: new Map(),
+
+        mediaRecorder: null,
+        audioChunks: [],
+        audioStream: null,
+        recordingStartedAt: 0,
+        recordingTicker: null,
+
+        micGranted: false,
+        micPermission: 'unknown',
+        micPolicyAllowed: true,
+        webAppUrl: '',
+        connectorMode: 'gas',
+        backendUrl: '',
+      };
+
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      init();
+
+      function init() {
+        ui.modeCreateBtn.addEventListener('click', function () {
+          showWizardStep('create');
+        });
+
+        ui.modeJoinBtn.addEventListener('click', function () {
+          showWizardStep('join');
+        });
+
+        ui.regenRoomBtn.addEventListener('click', function () {
+          ui.createRoomInput.value = generateRoomId();
+          updateInvitePreview();
+        });
+
+        ui.regenSeedBtn.addEventListener('click', function () {
+          ui.createSeedInput.value = generateSecret();
+          updateInvitePreview();
+        });
+
+        ui.createRoomInput.addEventListener('input', updateInvitePreview);
+        ui.createSeedInput.addEventListener('input', updateInvitePreview);
+
+        ui.copyInviteSetupBtn.addEventListener('click', function () {
+          copyInvite('wizard');
+        });
+
+        ui.copyInviteChatBtn.addEventListener('click', function () {
+          copyInvite('chat');
+          closeSidebarOverlay();
+        });
+
+        ui.parseInviteBtn.addEventListener('click', function () {
+          applyInviteFromText(ui.joinInviteInput.value);
+        });
+
+        ui.pasteInviteBtn.addEventListener('click', handlePasteInvite);
+
+        ui.createForm.addEventListener('submit', handleCreateSubmit);
+        ui.joinForm.addEventListener('submit', handleJoinSubmit);
+
+        document.querySelectorAll('[data-back="choice"]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            showWizardStep('choice');
+          });
+        });
+
+        ui.disconnectBtn.addEventListener('click', handleDisconnect);
+        ui.wizardSettingsBtn.addEventListener('click', openSettingsDialog);
+        ui.chatSettingsBtn.addEventListener('click', function () {
+          openSettingsDialog();
+          closeSidebarOverlay();
+        });
+        ui.sidebarToggleBtn.addEventListener('click', toggleSidebar);
+        ui.sidebarBackdrop.addEventListener('click', closeSidebarOverlay);
+        window.addEventListener('resize', handleViewportResize);
+        ui.textForm.addEventListener('submit', handleSendText);
+        ui.grantMicBtn.addEventListener('click', function () {
+          requestMicPermission(true);
+        });
+        ui.openStandaloneBtn.addEventListener('click', function () {
+          openStandalone();
+          closeSidebarOverlay();
+        });
+        ui.recordBtn.addEventListener('click', toggleRecording);
+        setRecordButtonVisual(false);
+
+        restorePreferences();
+        prepareCreateDefaults();
+        showWizardStep('choice');
+
+        state.connectorMode = hasGasBridge_() ? 'gas' : 'remote';
+        state.backendUrl = String(localStorage.getItem('sheetstalk.backend_url') || '').trim();
+
+        if (state.connectorMode === 'remote' && !state.backendUrl) {
+          setWizardStatus('Нажмите Настройки и укажите URL развертывания Apps Script (/exec).', 'error');
+        }
+
+        loadConfigFromBackend_();
+      }
+
+      function hasGasBridge_() {
+        return Boolean(window.google && google.script && google.script.run);
+      }
+
+      async function loadConfigFromBackend_() {
+        try {
+          const config = await getConfigFromBackend_();
+          if (config && Number(config.pollIntervalMs) > 0) {
+            state.pollIntervalMs = Number(config.pollIntervalMs);
+          }
+          if (config && Number(config.maxFetch) > 0) {
+            state.maxFetch = Math.min(Number(config.maxFetch), 120);
+          }
+          if (config && typeof config.webAppUrl === 'string' && config.webAppUrl.trim()) {
+            state.webAppUrl = config.webAppUrl.trim();
+          }
+        } catch (error) {
+          if (state.connectorMode === 'gas') {
+            setWizardStatus('Не удалось прочитать конфиг backend', 'error');
+          } else if (!state.backendUrl) {
+            setWizardStatus('Укажите URL backend в Настройках.', 'error');
+          } else {
+            setWizardStatus('Backend недоступен: проверьте URL развертывания.', 'error');
+          }
+        }
+      }
+
+      function openSettingsDialog() {
+        const current = state.backendUrl || state.webAppUrl || '';
+        const next = window.prompt('URL развертывания Apps Script Web App (обычно .../exec):', current);
+        if (next === null) {
+          return;
+        }
+
+        const normalized = normalizeBackendUrl_(next);
+        if (!normalized) {
+          setWizardStatus('Некорректный URL. Нужен полный URL deployment вида .../exec', 'error');
+          return;
+        }
+
+        state.backendUrl = normalized;
+        localStorage.setItem('sheetstalk.backend_url', normalized);
+        setWizardStatus('URL backend сохранен', 'ok');
+        loadConfigFromBackend_();
+      }
+
+      function normalizeBackendUrl_(value) {
+        const text = String(value || '').trim();
+        if (!text) {
+          return '';
+        }
+
+        try {
+          const parsed = new URL(text);
+          if (!/^https?:$/.test(parsed.protocol)) {
+            return '';
+          }
+
+          return parsed.toString();
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function restorePreferences() {
+        try {
+          const raw = localStorage.getItem('sheetstalk.prefs');
+          if (!raw) {
+            return;
+          }
+
+          const saved = JSON.parse(raw);
+          const nickname = String(saved.nickname || '');
+          const joinRoom = String(saved.joinRoom || '');
+
+          ui.createNameInput.value = nickname;
+          ui.joinNameInput.value = nickname;
+          ui.joinRoomInput.value = joinRoom;
+        } catch (error) {
+          // ignore invalid local storage
+        }
+      }
+
+      function savePreferences() {
+        const prefs = {
+          nickname: ui.joinNameInput.value.trim() || ui.createNameInput.value.trim(),
+          joinRoom: sanitizeRoom(ui.joinRoomInput.value),
+        };
+        localStorage.setItem('sheetstalk.prefs', JSON.stringify(prefs));
+      }
+
+      function prepareCreateDefaults() {
+        if (!ui.createRoomInput.value.trim()) {
+          ui.createRoomInput.value = generateRoomId();
+        }
+
+        if (!ui.createSeedInput.value.trim()) {
+          ui.createSeedInput.value = generateSecret();
+        }
+
+        updateInvitePreview();
+      }
+
+      function showWizardStep(step) {
+        ui.stepChoice.classList.add('hidden');
+        ui.createForm.classList.add('hidden');
+        ui.joinForm.classList.add('hidden');
+
+        if (step === 'create') {
+          prepareCreateDefaults();
+          ui.createForm.classList.remove('hidden');
+          setWizardStatus('Шаг 2 из 2: создание канала', '');
+          return;
+        }
+
+        if (step === 'join') {
+          ui.joinForm.classList.remove('hidden');
+          setWizardStatus('Шаг 2 из 2: подключение', '');
+          return;
+        }
+
+        ui.stepChoice.classList.remove('hidden');
+        setWizardStatus('Шаг 1 из 2', '');
+      }
+
+      function setWizardStatus(text, variant) {
+        ui.wizardStatus.textContent = text;
+        ui.wizardStatus.classList.remove('error', 'ok');
+        if (variant) {
+          ui.wizardStatus.classList.add(variant);
+        }
+      }
+
+      function setChatStatus(text, variant) {
+        ui.chatStatus.textContent = text;
+        ui.chatStatus.classList.remove('error', 'ok');
+        if (variant) {
+          ui.chatStatus.classList.add(variant);
+        }
+      }
+
+      function updateInvitePreview() {
+        const room = sanitizeRoom(ui.createRoomInput.value);
+        const seed = ui.createSeedInput.value.trim();
+        ui.invitePreview.textContent = 'room: ' + room + '\nseed: ' + seed;
+      }
+
+      function buildInviteText() {
+        const room = state.connected && state.creatorMode ? state.room : sanitizeRoom(ui.createRoomInput.value);
+        const seed = state.connected && state.creatorMode ? state.secret : ui.createSeedInput.value.trim();
+        return 'SheetsTalk invite\nroom: ' + room + '\nseed: ' + seed;
+      }
+
+      async function copyInvite(context) {
+        const text = buildInviteText();
+        const ok = await copyText(text);
+
+        if (context === 'chat') {
+          setChatStatus(ok ? 'Invite скопирован' : 'Не удалось скопировать invite', ok ? 'ok' : 'error');
+        } else {
+          setWizardStatus(ok ? 'Invite скопирован' : 'Не удалось скопировать invite', ok ? 'ok' : 'error');
+        }
+      }
+
+      async function copyText(text) {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            return true;
+          }
+        } catch (error) {
+          // fallback below
+        }
+
+        try {
+          const temp = document.createElement('textarea');
+          temp.value = text;
+          temp.style.position = 'fixed';
+          temp.style.opacity = '0';
+          document.body.appendChild(temp);
+          temp.select();
+          const ok = document.execCommand('copy');
+          temp.remove();
+          return Boolean(ok);
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function parseInviteText(text) {
+        const input = String(text || '').trim();
+        if (!input) {
+          return null;
+        }
+
+        let room = '';
+        let seed = '';
+
+        const lines = input.split(/\r?\n/);
+        for (const line of lines) {
+          const roomMatch = line.match(/^\s*room\s*[:=]\s*(.+)\s*$/i);
+          if (roomMatch) {
+            room = sanitizeRoom(roomMatch[1]);
+            continue;
+          }
+
+          const seedMatch = line.match(/^\s*seed\s*[:=]\s*(.+)\s*$/i);
+          if (seedMatch) {
+            seed = seedMatch[1].trim();
+          }
+        }
+
+        if (!room) {
+          const roomMatch = input.match(/room\s*[:=]\s*([a-z0-9_-]{3,64})/i);
+          if (roomMatch) {
+            room = sanitizeRoom(roomMatch[1]);
+          }
+        }
+
+        if (!seed) {
+          const seedMatch = input.match(/seed\s*[:=]\s*([^\n\r;]+)/i);
+          if (seedMatch) {
+            seed = seedMatch[1].trim();
+          }
+        }
+
+        if (!room || !seed) {
+          return null;
+        }
+
+        return {
+          room: room,
+          seed: seed,
+        };
+      }
+
+      function applyInviteFromText(text) {
+        const parsed = parseInviteText(text);
+        if (!parsed) {
+          setWizardStatus('Invite не распознан. Нужны строки room: и seed:', 'error');
+          return false;
+        }
+
+        ui.joinRoomInput.value = parsed.room;
+        ui.joinSeedInput.value = parsed.seed;
+        setWizardStatus('Invite распознан', 'ok');
+        return true;
+      }
+
+      async function handlePasteInvite() {
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+          setWizardStatus('Буфер обмена недоступен в этом браузере', 'error');
+          return;
+        }
+
+        try {
+          const text = await navigator.clipboard.readText();
+          ui.joinInviteInput.value = text;
+          applyInviteFromText(text);
+        } catch (error) {
+          setWizardStatus('Не удалось прочитать буфер обмена', 'error');
+        }
+      }
+
+      async function handleCreateSubmit(event) {
+        event.preventDefault();
+
+        const sender = ui.createNameInput.value.trim();
+        const room = sanitizeRoom(ui.createRoomInput.value);
+        const secret = ui.createSeedInput.value.trim();
+
+        ui.joinNameInput.value = sender;
+        ui.joinRoomInput.value = room;
+
+        await connectSession({
+          sender: sender,
+          room: room,
+          secret: secret,
+          creatorMode: true,
+        });
+      }
+
+      async function handleJoinSubmit(event) {
+        event.preventDefault();
+
+        const sender = ui.joinNameInput.value.trim();
+        let room = sanitizeRoom(ui.joinRoomInput.value);
+        let secret = ui.joinSeedInput.value.trim();
+
+        if ((!room || !secret) && ui.joinInviteInput.value.trim()) {
+          const parsed = parseInviteText(ui.joinInviteInput.value);
+          if (parsed) {
+            room = parsed.room;
+            secret = parsed.seed;
+            ui.joinRoomInput.value = room;
+            ui.joinSeedInput.value = secret;
+          }
+        }
+
+        ui.createNameInput.value = sender;
+
+        await connectSession({
+          sender: sender,
+          room: room,
+          secret: secret,
+          creatorMode: false,
+        });
+      }
+
+      async function connectSession(opts) {
+        if (!isBackendReady_()) {
+          return;
+        }
+
+        if (!opts.sender) {
+          setWizardStatus('Укажите ник', 'error');
+          return;
+        }
+
+        if (!isValidRoom(opts.room)) {
+          setWizardStatus('room: 3-64 символа (a-z, 0-9, _, -)', 'error');
+          return;
+        }
+
+        if (!opts.secret || opts.secret.length < 8) {
+          setWizardStatus('Слабый seed: минимум 8 символов', 'error');
+          return;
+        }
+
+        setWizardStatus('Деривация ключа...', '');
+
+        try {
+          const key = await deriveRoomKey(opts.secret, opts.room);
+
+          cleanupSession(false);
+
+          state.connected = true;
+          state.creatorMode = Boolean(opts.creatorMode);
+          state.leaveEventSent = false;
+          state.room = opts.room;
+          state.sender = opts.sender;
+          state.secret = opts.secret;
+          state.key = key;
+          state.cursor = 1;
+          state.decryptFailures = 0;
+          state.successfulDecrypts = 0;
+
+          resetMessageFeed();
+          unlockComposer(true);
+          showChatPanel();
+
+          ui.roomTitle.textContent = 'Secure Room #' + state.room;
+          ui.roomMeta.textContent = 'Вы: ' + state.sender;
+          ui.copyInviteChatBtn.classList.toggle('hidden', !state.creatorMode);
+          ui.creatorSeedLabel.classList.toggle('hidden', !state.creatorMode);
+          ui.creatorSeedLabel.textContent = state.creatorMode ? 'Seed канала: ' + state.secret : '';
+
+          const fp = await buildFingerprint(state.room, state.secret);
+          ui.chatFingerprint.textContent = 'Fingerprint: ' + fp;
+
+          setChatStatus('Подключено', 'ok');
+          savePreferences();
+          startPolling();
+          pollOnce();
+
+          evaluateMicPolicy();
+          checkMicrophonePermission();
+
+          if (state.creatorMode) {
+            await sendEventNote('создал канал');
+          } else {
+            await sendEventNote('подключился к чату');
+          }
+
+          scheduleFastPoll();
+        } catch (error) {
+          setWizardStatus('Ошибка подключения: ' + normalizeError(error), 'error');
+        }
+      }
+
+      function isBackendReady_() {
+        if (state.connectorMode === 'gas') {
+          return true;
+        }
+
+        if (!state.backendUrl) {
+          setWizardStatus('Нажмите Настройки и укажите URL backend Apps Script.', 'error');
+          return false;
+        }
+
+        return true;
+      }
+
+      function isCompactViewport() {
+        return window.matchMedia('(max-width: 920px)').matches;
+      }
+
+      function toggleSidebar() {
+        if (isCompactViewport()) {
+          ui.chatPanel.classList.toggle('sidebar-open');
+          return;
+        }
+        ui.chatPanel.classList.toggle('sidebar-hidden');
+      }
+
+      function closeSidebarOverlay() {
+        ui.chatPanel.classList.remove('sidebar-open');
+      }
+
+      function handleViewportResize() {
+        if (!isCompactViewport()) {
+          closeSidebarOverlay();
+        }
+      }
+
+      function showChatPanel() {
+        ui.wizardPanel.classList.add('hidden');
+        ui.chatPanel.classList.remove('hidden');
+        ui.chatPanel.classList.remove('sidebar-hidden');
+        closeSidebarOverlay();
+      }
+
+      function showWizardPanel() {
+        closeSidebarOverlay();
+        ui.chatPanel.classList.remove('sidebar-hidden');
+        ui.chatPanel.classList.add('hidden');
+        ui.wizardPanel.classList.remove('hidden');
+        showWizardStep('choice');
+      }
+
+      async function handleDisconnect() {
+        ui.disconnectBtn.disabled = true;
+
+        try {
+          if (state.connected && !state.leaveEventSent) {
+            state.leaveEventSent = true;
+            await sendEventNote('вышел из чата');
+          }
+        } catch (error) {
+          // best effort only
+        }
+
+        cleanupSession(true);
+        showWizardPanel();
+        setWizardStatus('Отключено', 'ok');
+        ui.disconnectBtn.disabled = false;
+      }
+
+      function cleanupSession(keepWizardValues) {
+        if (state.pollTimer) {
+          clearInterval(state.pollTimer);
+          state.pollTimer = null;
+        }
+
+        stopAudioStream();
+        clearRecordingTicker();
+
+        state.connected = false;
+        state.creatorMode = false;
+        state.room = '';
+        state.sender = '';
+        state.secret = '';
+        state.key = null;
+        state.cursor = 1;
+        state.polling = false;
+        state.decryptFailures = 0;
+        state.successfulDecrypts = 0;
+        state.leaveEventSent = false;
+
+        state.knownIds.clear();
+        state.knownQueue.length = 0;
+
+        state.messageNodeById.clear();
+        state.statusNodeById.clear();
+        state.outgoingStateById.clear();
+        state.pendingByCipher.clear();
+
+        state.deliveredReceiptSent.clear();
+        state.readReceiptSent.clear();
+        state.eventDedup.clear();
+
+        state.micGranted = false;
+        state.micPermission = 'unknown';
+        state.micPolicyAllowed = true;
+
+        unlockComposer(false);
+        updateMicUi();
+
+        ui.creatorSeedLabel.classList.add('hidden');
+        ui.creatorSeedLabel.textContent = '';
+
+        if (!keepWizardValues) {
+          return;
+        }
+      }
+
+      function isEmbeddedContext() {
+        try {
+          return window.top !== window.self;
+        } catch (error) {
+          return true;
+        }
+      }
+
+      function isMicAllowedByPolicy() {
+        try {
+          const policy = document.permissionsPolicy || document.featurePolicy;
+          if (policy && typeof policy.allowsFeature === 'function') {
+            return policy.allowsFeature('microphone');
+          }
+        } catch (error) {
+          // ignore and fallback
+        }
+        return true;
+      }
+
+      function openStandalone() {
+        const targetUrl = resolveStandaloneUrl();
+        if (!targetUrl) {
+          setChatStatus('Не найден URL деплоя. Откройте Web App link из Deploy -> Manage deployments.', 'error');
+          return;
+        }
+
+        try {
+          const popup = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+          if (!popup) {
+            window.location.assign(targetUrl);
+          }
+        } catch (error) {
+          setChatStatus('Откройте deployment URL вручную: ' + targetUrl, 'error');
+        }
+      }
+
+      function resolveStandaloneUrl() {
+        const fromConfig = String(state.webAppUrl || '').trim();
+        if (fromConfig.startsWith('https://') || fromConfig.startsWith('http://')) {
+          return fromConfig;
+        }
+
+        const fromBackend = String(state.backendUrl || '').trim();
+        if (fromBackend.startsWith('https://') || fromBackend.startsWith('http://')) {
+          return fromBackend;
+        }
+
+        const href = String(window.location.href || '');
+        if (href.includes('/exec') || href.includes('/dev')) {
+          return href;
+        }
+
+        return '';
+      }
+
+      function evaluateMicPolicy() {
+        state.micPolicyAllowed = isMicAllowedByPolicy();
+        ui.openStandaloneBtn.classList.toggle('hidden', !(isEmbeddedContext() || !state.micPolicyAllowed));
+
+        if (!state.micPolicyAllowed) {
+          ui.grantMicBtn.classList.add('hidden');
+          ui.recordBtn.disabled = true;
+          ui.audioState.textContent = 'Микрофон запрещен в этом встроенном режиме. Откройте web app в отдельной вкладке.';
+          setChatStatus('Микрофон заблокирован политикой страницы. Нужна отдельная вкладка /exec.', 'error');
+          return false;
+        }
+
+        return true;
+      }
+
+      async function checkMicrophonePermission() {
+        if (!evaluateMicPolicy()) {
+          return;
+        }
+
+        if (!navigator.permissions || !navigator.permissions.query) {
+          updateMicUi();
+          return;
+        }
+
+        try {
+          const permission = await navigator.permissions.query({ name: 'microphone' });
+          state.micPermission = permission.state;
+          state.micGranted = permission.state === 'granted';
+          updateMicUi();
+
+          permission.onchange = function () {
+            state.micPermission = permission.state;
+            state.micGranted = permission.state === 'granted';
+            updateMicUi();
+          };
+
+          if (permission.state === 'prompt') {
+            setChatStatus('Нажми "Разрешить микрофон" перед записью', '');
+          } else if (permission.state === 'denied') {
+            setChatStatus('Микрофон заблокирован в браузере. Разреши доступ для сайта.', 'error');
+          }
+        } catch (error) {
+          updateMicUi();
+        }
+      }
+
+      function updateMicUi() {
+        if (!state.micPolicyAllowed) {
+          ui.grantMicBtn.classList.add('hidden');
+          ui.recordBtn.disabled = true;
+          ui.audioState.textContent = 'Микрофон запрещен политикой страницы. Нажмите \"Открыть отдельно\".';
+          return;
+        }
+
+        if (state.micGranted) {
+          ui.recordBtn.disabled = false;
+          ui.grantMicBtn.classList.add('hidden');
+          if (!isRecording()) {
+            ui.audioState.textContent = 'Микрофон готов. Голосовые до 30 секунд.';
+          }
+          return;
+        }
+
+        ui.grantMicBtn.classList.remove('hidden');
+        ui.recordBtn.disabled = false;
+        if (!isRecording()) {
+          if (state.micPermission === 'denied') {
+            ui.audioState.textContent = 'Микрофон заблокирован. Разрешите его в настройках сайта.';
+          } else {
+            ui.audioState.textContent = 'Разрешите микрофон для голосовых заметок.';
+          }
+        }
+      }
+
+      async function requestMicPermission(manual) {
+        if (!evaluateMicPolicy()) {
+          return false;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          setChatStatus('Этот браузер не поддерживает запись аудио', 'error');
+          return false;
+        }
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          stream.getTracks().forEach(function (track) {
+            track.stop();
+          });
+
+          state.micGranted = true;
+          state.micPermission = 'granted';
+          updateMicUi();
+
+          if (manual) {
+            setChatStatus('Микрофон разрешен', 'ok');
+          }
+
+          return true;
+        } catch (error) {
+          state.micGranted = false;
+          updateMicUi();
+          setChatStatus('Микрофон: ' + toMicHint(error), 'error');
+          return false;
+        }
+      }
+
+      function resetMessageFeed() {
+        state.messageNodeById.clear();
+        state.statusNodeById.clear();
+        state.outgoingStateById.clear();
+
+        ui.messages.innerHTML = '';
+
+        const placeholder = document.createElement('div');
+        placeholder.id = 'placeholder';
+        placeholder.className = 'placeholder';
+        placeholder.textContent = 'История подгружается...';
+        ui.messages.appendChild(placeholder);
+      }
+
+      function unlockComposer(enabled) {
+        ui.textInput.disabled = !enabled;
+        ui.sendTextBtn.disabled = !enabled;
+        ui.recordBtn.disabled = !enabled;
+      }
+
+      function startPolling() {
+        if (state.pollTimer) {
+          clearInterval(state.pollTimer);
+        }
+        state.pollTimer = setInterval(pollOnce, state.pollIntervalMs);
+      }
+
+      function scheduleFastPoll() {
+        setTimeout(function () {
+          pollOnce();
+        }, 120);
+      }
+
+      function pollOnce() {
+        if (!state.connected || state.polling) {
+          return;
+        }
+
+        state.polling = true;
+
+        fetchMessagesFromBackend_(state.room, state.cursor, state.maxFetch)
+          .then(function (response) {
+            state.polling = false;
+            processIncoming(response).catch(function (error) {
+              setChatStatus('Ошибка чтения: ' + normalizeError(error), 'error');
+            });
+          })
+          .catch(function (error) {
+            state.polling = false;
+            setChatStatus('Ошибка чтения: ' + normalizeError(error), 'error');
+          });
+      }
+
+      async function processIncoming(response) {
+        if (!response) {
+          return;
+        }
+
+        if (Number(response.nextCursor) > 0) {
+          state.cursor = Math.max(state.cursor, Number(response.nextCursor));
+        }
+
+        const messages = Array.isArray(response.messages) ? response.messages : [];
+        if (!messages.length) {
+          return;
+        }
+
+        for (const msg of messages) {
+          if (!msg || !msg.id || state.knownIds.has(msg.id)) {
+            continue;
+          }
+
+          const cipherKey = makeCipherKey(msg.ivB64, msg.payloadB64);
+          if (msg.sender === state.sender && state.pendingByCipher.has(cipherKey)) {
+            const tempId = state.pendingByCipher.get(cipherKey);
+            state.pendingByCipher.delete(cipherKey);
+            promotePendingMessage(tempId, msg.id, msg.createdAt);
+            rememberMessageId(msg.id);
+            continue;
+          }
+
+          if (!msg.payloadB64 || !msg.ivB64) {
+            rememberMessageId(msg.id);
+            continue;
+          }
+
+          try {
+            if (msg.kind === 'receipt') {
+              await handleIncomingReceipt(msg);
+              state.successfulDecrypts += 1;
+              state.decryptFailures = 0;
+              rememberMessageId(msg.id);
+              continue;
+            }
+
+            const isSelf = msg.sender === state.sender;
+
+            if (!isSelf && (msg.kind === 'text' || msg.kind === 'audio')) {
+              sendReceipt(msg.id, 'delivered');
+            }
+
+            if (msg.kind === 'audio') {
+              const audioBytes = await decryptPayload(msg.payloadB64, msg.ivB64, 'audio', msg.mime);
+              const blob = new Blob([audioBytes], { type: msg.mime || 'audio/webm' });
+              const url = URL.createObjectURL(blob);
+              renderAudioMessage(msg, url, {
+                isSelf: isSelf,
+                localEcho: false,
+                status: isSelf ? state.outgoingStateById.get(msg.id) || 'sent' : '',
+              });
+
+              if (!isSelf) {
+                sendReceipt(msg.id, 'read');
+              }
+            } else {
+              const textBytes = await decryptPayload(msg.payloadB64, msg.ivB64, msg.kind || 'text', msg.mime);
+              const text = decoder.decode(textBytes);
+
+              if (msg.kind === 'event') {
+                renderEventMessage(msg, text);
+              } else {
+                renderTextMessage(msg, text, {
+                  isSelf: isSelf,
+                  localEcho: false,
+                  status: isSelf ? state.outgoingStateById.get(msg.id) || 'sent' : '',
+                });
+
+                if (!isSelf) {
+                  sendReceipt(msg.id, 'read');
+                }
+              }
+            }
+
+            state.successfulDecrypts += 1;
+            state.decryptFailures = 0;
+          } catch (error) {
+            state.decryptFailures += 1;
+            if (state.successfulDecrypts === 0 && state.decryptFailures >= 6) {
+              setChatStatus('Похоже, не совпадает key/room. Сверьте invite и fingerprint.', 'error');
+            }
+
+            renderLockedMessage(msg, msg.sender === state.sender);
+          }
+
+          rememberMessageId(msg.id);
+        }
+
+        scrollMessagesToBottom();
+      }
+
+      async function handleIncomingReceipt(msg) {
+        if (msg.sender === state.sender) {
+          return;
+        }
+
+        const receiptBytes = await decryptPayload(msg.payloadB64, msg.ivB64, 'receipt', msg.mime);
+        const text = decoder.decode(receiptBytes);
+
+        let payload = null;
+        try {
+          payload = JSON.parse(text);
+        } catch (error) {
+          return;
+        }
+
+        const targetId = String(payload.targetId || '');
+        const receiptState = String(payload.state || payload.type || '');
+
+        if (!targetId) {
+          return;
+        }
+
+        if (receiptState === 'delivered') {
+          setOutgoingStatus(targetId, 'delivered');
+        } else if (receiptState === 'read') {
+          setOutgoingStatus(targetId, 'read');
+        }
+      }
+
+      async function handleSendText(event) {
+        event.preventDefault();
+
+        if (!state.connected) {
+          return;
+        }
+
+        const text = ui.textInput.value.trim();
+        if (!text) {
+          return;
+        }
+
+        ui.sendTextBtn.disabled = true;
+        ui.textInput.value = '';
+
+        let tempId = '';
+        let cipherKey = '';
+
+        try {
+          const plainBytes = encoder.encode(text);
+          const encrypted = await encryptPayload(plainBytes, 'text', 'text/plain;charset=utf-8');
+
+          tempId = makeTempId('txt');
+          cipherKey = makeCipherKey(encrypted.ivB64, encrypted.payloadB64);
+          state.pendingByCipher.set(cipherKey, tempId);
+
+          renderTextMessage(
+            {
+              id: tempId,
+              sender: state.sender,
+              createdAt: new Date().toISOString(),
+            },
+            text,
+            {
+              isSelf: true,
+              localEcho: true,
+              status: 'sending',
+            }
+          );
+          setOutgoingStatus(tempId, 'sending');
+          scrollMessagesToBottom();
+
+          const response = await sendToServer({
+            room: state.room,
+            sender: state.sender,
+            kind: 'text',
+            mime: 'text/plain;charset=utf-8',
+            ivB64: encrypted.ivB64,
+            payloadB64: encrypted.payloadB64,
+            byteLength: plainBytes.byteLength,
+          });
+
+          const realId = String((response && response.id) || '');
+          const realCreatedAt = String((response && response.createdAt) || '');
+          const realCursor = Number((response && response.cursor) || 0);
+
+          if (realId) {
+            state.pendingByCipher.delete(cipherKey);
+            promotePendingMessage(tempId, realId, realCreatedAt);
+            rememberMessageId(realId);
+            state.cursor = Math.max(state.cursor, realCursor || state.cursor);
+            setOutgoingStatus(realId, 'sent');
+          } else {
+            setOutgoingStatus(tempId, 'sent');
+            scheduleFastPoll();
+          }
+
+          setChatStatus('Сообщение отправлено', 'ok');
+          scheduleFastPoll();
+        } catch (error) {
+          if (cipherKey) {
+            state.pendingByCipher.delete(cipherKey);
+          }
+          if (tempId) {
+            setOutgoingStatus(tempId, 'error');
+          }
+          if (!ui.textInput.value.trim()) {
+            ui.textInput.value = text;
+          }
+          setChatStatus('Ошибка отправки: ' + normalizeError(error), 'error');
+        } finally {
+          ui.sendTextBtn.disabled = false;
+        }
+      }
+
+      async function sendEventNote(text) {
+        if (!state.connected || !text) {
+          return;
+        }
+
+        const plainBytes = encoder.encode(text);
+        const encrypted = await encryptPayload(plainBytes, 'event', 'text/plain;charset=utf-8');
+
+        const response = await sendToServer({
+          room: state.room,
+          sender: state.sender,
+          kind: 'event',
+          mime: 'text/plain;charset=utf-8',
+          ivB64: encrypted.ivB64,
+          payloadB64: encrypted.payloadB64,
+          byteLength: plainBytes.byteLength,
+        });
+
+        if (response && response.id) {
+          rememberMessageId(String(response.id));
+          state.cursor = Math.max(state.cursor, Number(response.cursor) || state.cursor);
+        }
+      }
+
+      async function sendReceipt(targetId, receiptState) {
+        if (!state.connected || !targetId) {
+          return;
+        }
+
+        const isDelivered = receiptState === 'delivered';
+        const storage = isDelivered ? state.deliveredReceiptSent : state.readReceiptSent;
+        if (storage.has(targetId)) {
+          return;
+        }
+
+        storage.add(targetId);
+
+        try {
+          const plainBytes = encoder.encode(
+            JSON.stringify({
+              targetId: targetId,
+              state: receiptState,
+              at: Date.now(),
+            })
+          );
+
+          const encrypted = await encryptPayload(plainBytes, 'receipt', 'application/json');
+
+          const response = await sendToServer({
+            room: state.room,
+            sender: state.sender,
+            kind: 'receipt',
+            mime: 'application/json',
+            ivB64: encrypted.ivB64,
+            payloadB64: encrypted.payloadB64,
+            byteLength: plainBytes.byteLength,
+          });
+
+          if (response && response.id) {
+            rememberMessageId(String(response.id));
+            state.cursor = Math.max(state.cursor, Number(response.cursor) || state.cursor);
+          }
+        } catch (error) {
+          storage.delete(targetId);
+        }
+      }
+
+      async function toggleRecording() {
+        if (!state.connected) {
+          return;
+        }
+
+        if (!evaluateMicPolicy()) {
+          return;
+        }
+
+        if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+          state.mediaRecorder.stop();
+          return;
+        }
+
+        if (!state.micGranted) {
+          const ok = await requestMicPermission(true);
+          if (!ok) {
+            return;
+          }
+        }
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const mimeType = pickRecorderMimeType();
+          const options = mimeType ? { mimeType: mimeType, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 };
+
+          const recorder = new MediaRecorder(stream, options);
+          state.audioStream = stream;
+          state.mediaRecorder = recorder;
+          state.audioChunks = [];
+          state.recordingStartedAt = Date.now();
+
+          recorder.ondataavailable = function (event) {
+            if (event.data && event.data.size > 0) {
+              state.audioChunks.push(event.data);
+            }
+          };
+
+          recorder.onerror = function () {
+            setChatStatus('Ошибка записи микрофона', 'error');
+          };
+
+          recorder.onstop = async function () {
+            clearRecordingTicker();
+            setRecordButtonVisual(false);
+            ui.recordBtn.disabled = true;
+
+            try {
+              const blob = new Blob(state.audioChunks, { type: recorder.mimeType || 'audio/webm' });
+              await sendAudioBlob(blob);
+            } catch (error) {
+              setChatStatus('Ошибка отправки аудио: ' + normalizeError(error), 'error');
+            } finally {
+              stopAudioStream();
+              state.mediaRecorder = null;
+              state.audioChunks = [];
+              state.recordingStartedAt = 0;
+              ui.recordBtn.disabled = false;
+            }
+          };
+
+          recorder.start(350);
+          setRecordButtonVisual(true);
+          ui.audioState.textContent = 'Идет запись... 00:00 / 00:30';
+          setChatStatus('Запись аудио...', '');
+          startRecordingTicker();
+        } catch (error) {
+          stopAudioStream();
+          setChatStatus('Микрофон: ' + toMicHint(error), 'error');
+        }
+      }
+
+      function startRecordingTicker() {
+        clearRecordingTicker();
+
+        state.recordingTicker = setInterval(function () {
+          if (!state.mediaRecorder || state.mediaRecorder.state !== 'recording') {
+            clearRecordingTicker();
+            return;
+          }
+
+          const elapsedMs = Date.now() - state.recordingStartedAt;
+          ui.audioState.textContent = 'Идет запись... ' + fmtDuration(elapsedMs) + ' / 00:30';
+
+          if (elapsedMs >= 30000) {
+            state.mediaRecorder.stop();
+          }
+        }, 200);
+      }
+
+      function clearRecordingTicker() {
+        if (state.recordingTicker) {
+          clearInterval(state.recordingTicker);
+          state.recordingTicker = null;
+        }
+
+        setRecordButtonVisual(false);
+        updateMicUi();
+      }
+
+      function setRecordButtonVisual(recording) {
+        const isRecordingNow = Boolean(recording);
+        ui.recordBtn.classList.toggle('is-recording', isRecordingNow);
+        ui.recordBtn.setAttribute('aria-label', isRecordingNow ? 'Остановить и отправить голосовое' : 'Записать голосовое');
+        ui.recordBtn.title = isRecordingNow ? 'Остановить и отправить' : 'Записать голосовое';
+      }
+
+      async function sendAudioBlob(blob) {
+        if (!blob || blob.size === 0) {
+          throw new Error('Пустая аудиозапись');
+        }
+
+        if (blob.size > 1300000) {
+          throw new Error('Аудио слишком большое, сократите длительность');
+        }
+
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        const mime = blob.type || 'audio/webm';
+        const encrypted = await encryptPayload(bytes, 'audio', mime);
+
+        const tempId = makeTempId('aud');
+        const cipherKey = makeCipherKey(encrypted.ivB64, encrypted.payloadB64);
+        state.pendingByCipher.set(cipherKey, tempId);
+
+        const localUrl = URL.createObjectURL(blob);
+        renderAudioMessage(
+          {
+            id: tempId,
+            sender: state.sender,
+            createdAt: new Date().toISOString(),
+          },
+          localUrl,
+          {
+            isSelf: true,
+            localEcho: true,
+            status: 'sending',
+          }
+        );
+        setOutgoingStatus(tempId, 'sending');
+        scrollMessagesToBottom();
+
+        try {
+          const response = await sendToServer({
+            room: state.room,
+            sender: state.sender,
+            kind: 'audio',
+            mime: mime,
+            ivB64: encrypted.ivB64,
+            payloadB64: encrypted.payloadB64,
+            byteLength: bytes.byteLength,
+          });
+
+          const realId = String((response && response.id) || '');
+          const realCreatedAt = String((response && response.createdAt) || '');
+          const realCursor = Number((response && response.cursor) || 0);
+
+          if (realId) {
+            state.pendingByCipher.delete(cipherKey);
+            promotePendingMessage(tempId, realId, realCreatedAt);
+            rememberMessageId(realId);
+            state.cursor = Math.max(state.cursor, realCursor || state.cursor);
+            setOutgoingStatus(realId, 'sent');
+          } else {
+            setOutgoingStatus(tempId, 'sent');
+            scheduleFastPoll();
+          }
+
+          setChatStatus('Голосовое отправлено', 'ok');
+          scheduleFastPoll();
+        } catch (error) {
+          state.pendingByCipher.delete(cipherKey);
+          setOutgoingStatus(tempId, 'error');
+          throw error;
+        }
+      }
+
+      function sendToServer(payload) {
+        if (state.connectorMode === 'gas') {
+          return callGas_('sendMessage', [payload]);
+        }
+
+        return sendRemote_(payload);
+      }
+
+      function getConfigFromBackend_() {
+        if (state.connectorMode === 'gas') {
+          return callGas_('getConfig', []);
+        }
+
+        return callRemoteGet_('config', {});
+      }
+
+      function fetchMessagesFromBackend_(room, afterCursor, limit) {
+        if (state.connectorMode === 'gas') {
+          return callGas_('fetchMessages', [room, afterCursor, limit]);
+        }
+
+        return callRemoteGet_('fetch', {
+          room: room,
+          afterCursor: String(afterCursor),
+          limit: String(limit),
+        });
+      }
+
+      function callGas_(fnName, args) {
+        return new Promise(function (resolve, reject) {
+          if (!hasGasBridge_()) {
+            reject(new Error('Google Apps Script bridge is unavailable.'));
+            return;
+          }
+
+          const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+          runner[fnName].apply(runner, args || []);
+        });
+      }
+
+      function callRemoteGet_(action, params) {
+        if (!state.backendUrl) {
+          return Promise.reject(new Error('Backend URL is not configured.'));
+        }
+
+        const payload = Object.assign(
+          {
+            api: '1',
+            action: action,
+          },
+          params || {}
+        );
+
+        const url = buildBackendUrl_(payload);
+
+        return fetchJsonApi_(url).catch(function () {
+          return jsonpRequest_(state.backendUrl, payload);
+        }).then(function (response) {
+          if (!response || response.ok !== true) {
+            const message = response && response.error ? response.error : 'Remote API request failed.';
+            throw new Error(message);
+          }
+
+          return response.data;
+        });
+      }
+
+      function sendRemote_(payload) {
+        const raw = JSON.stringify(payload);
+        const encodedPayload = encodeWebSafeJson_(raw);
+
+        const postUrl = buildBackendUrl_({ api: '1' });
+        const postBody = JSON.stringify({
+          action: 'send',
+          payload: payload,
+        });
+
+        return fetchWithTimeout_(
+          postUrl,
+          {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-store',
+            credentials: 'omit',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: postBody,
+          },
+          12000
+        )
+          .then(function (response) {
+            return response.text();
+          })
+          .then(parseApiTextResponse_)
+          .then(function (parsed) {
+            if (!parsed || parsed.ok !== true) {
+              const msg = parsed && parsed.error ? parsed.error : 'Remote POST send failed.';
+              throw new Error(msg);
+            }
+            return parsed.data;
+          })
+          .catch(function () {
+            if (encodedPayload.length <= 1800) {
+              return callRemoteGet_('send', {
+                payloadB64: encodedPayload,
+              });
+            }
+
+            const noCorsUrl = buildBackendUrl_({ api: '1' });
+            return fetch(noCorsUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+              },
+              body: postBody,
+            }).then(function () {
+              return {
+                id: '',
+                createdAt: new Date().toISOString(),
+                cursor: state.cursor,
+                deferred: true,
+              };
+            });
+          });
+      }
+
+      function jsonpRequest_(url, params) {
+        return new Promise(function (resolve, reject) {
+          const callbackId = '__sheetstalk_cb_' + Math.random().toString(16).slice(2) + Date.now();
+          const query = new URLSearchParams(Object.assign({}, params || {}, { callback: callbackId })).toString();
+          const src = url + (url.indexOf('?') === -1 ? '?' : '&') + query;
+
+          const script = document.createElement('script');
+          let done = false;
+
+          function cleanup() {
+            if (done) {
+              return;
+            }
+            done = true;
+            if (script.parentNode) {
+              script.parentNode.removeChild(script);
+            }
+            try {
+              delete window[callbackId];
+            } catch (error) {
+              window[callbackId] = undefined;
+            }
+          }
+
+          const timeout = setTimeout(function () {
+            cleanup();
+            reject(new Error('Remote API timeout.'));
+          }, 5000);
+
+          window[callbackId] = function (data) {
+            clearTimeout(timeout);
+            cleanup();
+            resolve(data);
+          };
+
+          script.onerror = function () {
+            clearTimeout(timeout);
+            cleanup();
+            reject(new Error('Remote API script load failed.'));
+          };
+
+          script.src = src;
+          document.head.appendChild(script);
+        });
+      }
+
+      function buildBackendUrl_(params) {
+        const query = new URLSearchParams(params || {}).toString();
+        return state.backendUrl + (state.backendUrl.indexOf('?') === -1 ? '?' : '&') + query;
+      }
+
+      function fetchJsonApi_(url) {
+        return fetchWithTimeout_(
+          url,
+          {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-store',
+            credentials: 'omit',
+          },
+          8000
+        )
+          .then(function (response) {
+            return response.text();
+          })
+          .then(parseApiTextResponse_);
+      }
+
+      function fetchWithTimeout_(url, options, timeoutMs) {
+        if (typeof fetch !== 'function') {
+          return Promise.reject(new Error('Fetch API is unavailable.'));
+        }
+
+        const opts = Object.assign({}, options || {});
+        let timer = null;
+        let controller = null;
+
+        if (typeof AbortController === 'function') {
+          controller = new AbortController();
+          opts.signal = controller.signal;
+        }
+
+        const timeout = Number(timeoutMs) > 0 ? Number(timeoutMs) : 10000;
+
+        return new Promise(function (resolve, reject) {
+          if (controller) {
+            timer = setTimeout(function () {
+              controller.abort();
+            }, timeout);
+          } else {
+            timer = setTimeout(function () {
+              reject(new Error('Request timeout.'));
+            }, timeout);
+          }
+
+          fetch(url, opts)
+            .then(function (response) {
+              clearTimeout(timer);
+              resolve(response);
+            })
+            .catch(function (error) {
+              clearTimeout(timer);
+              reject(error);
+            });
+        });
+      }
+
+      function parseApiTextResponse_(text) {
+        const raw = String(text || '').trim();
+        if (!raw) {
+          throw new Error('Empty backend response.');
+        }
+
+        if (raw[0] === '{' || raw[0] === '[') {
+          return JSON.parse(raw);
+        }
+
+        const match = raw.match(/^[A-Za-z_$][0-9A-Za-z_$\\.]*\\(([\\s\\S]*)\\);?$/);
+        if (match && match[1]) {
+          return JSON.parse(match[1]);
+        }
+
+        throw new Error('Unexpected backend response format.');
+      }
+
+      function encodeWebSafeJson_(jsonText) {
+        const bytes = encoder.encode(String(jsonText || ''));
+        const b64 = bytesToBase64(bytes);
+        return b64.split('+').join('-').split('/').join('_').replace(/=+$/g, '');
+      }
+
+      async function deriveRoomKey(secret, room) {
+        const normalizedSecret = secret.trim().replace(/\s+/g, ' ');
+        const secretBytes = encoder.encode(normalizedSecret);
+
+        const material = await crypto.subtle.importKey('raw', secretBytes, 'PBKDF2', false, ['deriveBits']);
+        const seedBits = await crypto.subtle.deriveBits(
+          {
+            name: 'PBKDF2',
+            hash: 'SHA-512',
+            salt: encoder.encode('sheetstalk-wallet:' + room),
+            iterations: 210000,
+          },
+          material,
+          512
+        );
+
+        const seedKey = await crypto.subtle.importKey('raw', seedBits, 'HKDF', false, ['deriveKey']);
+
+        return crypto.subtle.deriveKey(
+          {
+            name: 'HKDF',
+            hash: 'SHA-256',
+            salt: encoder.encode('sheetstalk-e2ee-v1'),
+            info: encoder.encode('room:' + room),
+          },
+          seedKey,
+          {
+            name: 'AES-GCM',
+            length: 256,
+          },
+          false,
+          ['encrypt', 'decrypt']
+        );
+      }
+
+      async function encryptPayload(plainBytes, kind, mime) {
+        if (!state.key) {
+          throw new Error('Ключ не готов');
+        }
+
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const aad = encoder.encode('sheetstalk|' + state.room + '|' + kind + '|' + (mime || ''));
+
+        const encrypted = await crypto.subtle.encrypt(
+          {
+            name: 'AES-GCM',
+            iv: iv,
+            additionalData: aad,
+            tagLength: 128,
+          },
+          state.key,
+          plainBytes
+        );
+
+        return {
+          ivB64: bytesToBase64(iv),
+          payloadB64: bytesToBase64(new Uint8Array(encrypted)),
+        };
+      }
+
+      async function decryptPayload(payloadB64, ivB64, kind, mime) {
+        if (!state.key) {
+          throw new Error('Нет ключа для дешифрования');
+        }
+
+        const iv = base64ToBytes(ivB64);
+        const payload = base64ToBytes(payloadB64);
+        const aad = encoder.encode('sheetstalk|' + state.room + '|' + kind + '|' + (mime || ''));
+
+        const plain = await crypto.subtle.decrypt(
+          {
+            name: 'AES-GCM',
+            iv: iv,
+            additionalData: aad,
+            tagLength: 128,
+          },
+          state.key,
+          payload
+        );
+
+        return new Uint8Array(plain);
+      }
+
+      async function buildFingerprint(room, secret) {
+        const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode('fp|' + room + '|' + secret));
+        const fpHex = toHex(new Uint8Array(hashBuffer)).slice(0, 24).toUpperCase();
+        return fpHex.match(/.{1,4}/g).join('-');
+      }
+
+      function renderTextMessage(msg, text, options) {
+        const opts = options || {};
+        removePlaceholder();
+
+        const wrapper = buildMessageShell(msg, opts);
+        const body = document.createElement('p');
+        body.className = 'msg-text';
+        body.textContent = text;
+        wrapper.appendChild(body);
+
+        ui.messages.appendChild(wrapper);
+        registerMessageNode(msg.id, wrapper);
+      }
+
+      function renderAudioMessage(msg, audioUrl, options) {
+        const opts = options || {};
+        removePlaceholder();
+
+        const wrapper = buildMessageShell(msg, opts);
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.preload = 'none';
+        audio.src = audioUrl;
+        wrapper.appendChild(audio);
+
+        ui.messages.appendChild(wrapper);
+        registerMessageNode(msg.id, wrapper);
+      }
+
+      function renderEventMessage(msg, text) {
+        removePlaceholder();
+
+        const dedupKey = (msg.sender || 'unknown') + '|' + text;
+        const createdTs = Date.parse(msg.createdAt || '') || Date.now();
+        const lastTs = state.eventDedup.get(dedupKey) || 0;
+        if (createdTs - lastTs < 4500) {
+          return;
+        }
+        state.eventDedup.set(dedupKey, createdTs);
+
+        if (state.eventDedup.size > 500) {
+          const first = state.eventDedup.keys().next();
+          if (!first.done) {
+            state.eventDedup.delete(first.value);
+          }
+        }
+
+        const el = document.createElement('div');
+        el.className = 'event-row';
+        el.textContent = formatTime(msg.createdAt) + ' • ' + (msg.sender || 'unknown') + ' ' + text;
+        ui.messages.appendChild(el);
+      }
+
+      function renderLockedMessage(msg, isSelf) {
+        removePlaceholder();
+
+        const wrapper = buildMessageShell(msg, {
+          isSelf: isSelf,
+          localEcho: false,
+          status: isSelf ? 'error' : '',
+        });
+
+        const body = document.createElement('p');
+        body.className = 'msg-text';
+        body.textContent = 'Не удалось расшифровать (другой key/room)';
+        wrapper.appendChild(body);
+
+        ui.messages.appendChild(wrapper);
+        registerMessageNode(msg.id, wrapper);
+      }
+
+      function buildMessageShell(msg, options) {
+        const opts = options || {};
+        const isSelf = Boolean(opts.isSelf);
+        const localEcho = Boolean(opts.localEcho);
+
+        const wrapper = document.createElement('article');
+        wrapper.className = 'msg' + (isSelf ? ' self' : '');
+        wrapper.dataset.mid = msg.id || '';
+
+        const meta = document.createElement('div');
+        meta.className = 'msg-meta';
+
+        const author = document.createElement('span');
+        author.className = 'msg-author';
+        author.textContent = (msg.sender || 'unknown') + (localEcho ? ' • local' : '');
+
+        const right = document.createElement('span');
+        right.className = 'msg-right';
+
+        const time = document.createElement('span');
+        time.className = 'msg-time';
+        time.textContent = formatTime(msg.createdAt || new Date().toISOString());
+
+        right.appendChild(time);
+
+        if (isSelf) {
+          const stateNode = document.createElement('span');
+          stateNode.className = 'msg-state';
+
+          const initial = opts.status || 'sent';
+          stateNode.dataset.state = initial;
+          stateNode.textContent = STATUS_TEXT[initial] || STATUS_TEXT.sent;
+
+          right.appendChild(stateNode);
+
+          if (msg.id) {
+            state.statusNodeById.set(msg.id, stateNode);
+            state.outgoingStateById.set(msg.id, initial);
+          }
+        }
+
+        meta.appendChild(author);
+        meta.appendChild(right);
+        wrapper.appendChild(meta);
+
+        return wrapper;
+      }
+
+      function registerMessageNode(id, node) {
+        if (!id) {
+          return;
+        }
+        state.messageNodeById.set(id, node);
+      }
+
+      function setOutgoingStatus(id, nextState) {
+        if (!id || !nextState) {
+          return;
+        }
+
+        const prev = state.outgoingStateById.get(id);
+
+        if (prev) {
+          if (prev === nextState) {
+            return;
+          }
+
+          if (nextState === 'error') {
+            if (prev === 'read') {
+              return;
+            }
+          } else if (prev !== 'error' && STATUS_RANK[nextState] < STATUS_RANK[prev]) {
+            return;
+          }
+        }
+
+        state.outgoingStateById.set(id, nextState);
+
+        const node = state.statusNodeById.get(id);
+        if (!node) {
+          return;
+        }
+
+        node.dataset.state = nextState;
+        node.textContent = STATUS_TEXT[nextState] || STATUS_TEXT.sent;
+      }
+
+      function promotePendingMessage(tempId, realId, createdAt) {
+        if (!tempId || !realId || tempId === realId) {
+          return;
+        }
+
+        const msgNode = state.messageNodeById.get(tempId);
+        if (msgNode) {
+          msgNode.dataset.mid = realId;
+          state.messageNodeById.set(realId, msgNode);
+          state.messageNodeById.delete(tempId);
+
+          const authorNode = msgNode.querySelector('.msg-author');
+          if (authorNode) {
+            authorNode.textContent = String(authorNode.textContent || '').replace(/\s*•\s*local$/, '');
+          }
+
+          const timeNode = msgNode.querySelector('.msg-time');
+          if (timeNode && createdAt) {
+            timeNode.textContent = formatTime(createdAt);
+          }
+        }
+
+        const statusNode = state.statusNodeById.get(tempId);
+        if (statusNode) {
+          state.statusNodeById.set(realId, statusNode);
+          state.statusNodeById.delete(tempId);
+        }
+
+        const prevState = state.outgoingStateById.get(tempId);
+        if (prevState) {
+          state.outgoingStateById.set(realId, prevState);
+          state.outgoingStateById.delete(tempId);
+        }
+      }
+
+      function removePlaceholder() {
+        const el = document.getElementById('placeholder');
+        if (el) {
+          el.remove();
+        }
+      }
+
+      function rememberMessageId(id) {
+        if (!id || state.knownIds.has(id)) {
+          return;
+        }
+
+        state.knownIds.add(id);
+        state.knownQueue.push(id);
+
+        if (state.knownQueue.length > 3000) {
+          const removed = state.knownQueue.shift();
+          if (removed) {
+            state.knownIds.delete(removed);
+          }
+        }
+      }
+
+      function scrollMessagesToBottom() {
+        ui.messages.scrollTop = ui.messages.scrollHeight;
+      }
+
+      function stopAudioStream() {
+        if (state.audioStream) {
+          state.audioStream.getTracks().forEach(function (track) {
+            track.stop();
+          });
+          state.audioStream = null;
+        }
+      }
+
+      function pickRecorderMimeType() {
+        const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+        for (const candidate of candidates) {
+          if (MediaRecorder.isTypeSupported(candidate)) {
+            return candidate;
+          }
+        }
+        return '';
+      }
+
+      function isRecording() {
+        return Boolean(state.mediaRecorder && state.mediaRecorder.state === 'recording');
+      }
+
+      function fmtDuration(ms) {
+        const totalSec = Math.max(0, Math.floor(ms / 1000));
+        const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+        const ss = String(totalSec % 60).padStart(2, '0');
+        return mm + ':' + ss;
+      }
+
+      function formatTime(iso) {
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) {
+          return '--:--:--';
+        }
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        });
+      }
+
+      function sanitizeRoom(input) {
+        return String(input || '').trim().toLowerCase().replace(/\s+/g, '_');
+      }
+
+      function isValidRoom(room) {
+        return /^[a-z0-9_-]{3,64}$/.test(room);
+      }
+
+      function generateRoomId() {
+        const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        const bytes = crypto.getRandomValues(new Uint8Array(8));
+        let room = 'ch-';
+        for (let i = 0; i < bytes.length; i += 1) {
+          room += alphabet[bytes[i] % alphabet.length];
+        }
+        return room;
+      }
+
+      function generateSecret() {
+        const bytes = crypto.getRandomValues(new Uint8Array(32));
+        return toHex(bytes);
+      }
+
+      function makeTempId(prefix) {
+        const bytes = crypto.getRandomValues(new Uint8Array(6));
+        return prefix + '-' + toHex(bytes);
+      }
+
+      function makeCipherKey(ivB64, payloadB64) {
+        const iv = String(ivB64 || '');
+        const payload = String(payloadB64 || '');
+        return iv + '|' + payload.length + '|' + payload.slice(0, 80);
+      }
+
+      function bytesToBase64(bytes) {
+        let binary = '';
+        const chunk = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+        }
+        return btoa(binary);
+      }
+
+      function base64ToBytes(b64) {
+        const clean = String(b64 || '').replace(/\s+/g, '');
+        const binary = atob(clean);
+        const out = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1) {
+          out[i] = binary.charCodeAt(i);
+        }
+        return out;
+      }
+
+      function toHex(bytes) {
+        return Array.from(bytes)
+          .map(function (b) {
+            return b.toString(16).padStart(2, '0');
+          })
+          .join('');
+      }
+
+      function normalizeError(err) {
+        if (!err) {
+          return 'unknown error';
+        }
+
+        if (typeof err === 'string') {
+          return err;
+        }
+
+        if (err.message) {
+          return err.message;
+        }
+
+        return JSON.stringify(err);
+      }
+
+      function toMicHint(error) {
+        const name = String((error && error.name) || '');
+        const message = normalizeError(error);
+
+        if (/permissions policy|not allowed in this document/i.test(message)) {
+          return 'в этом встроенном режиме микрофон запрещен. Открой web app в отдельной вкладке /exec.';
+        }
+
+        if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+          return 'доступ запрещен. Открой настройки сайта в браузере и включи микрофон для URL Web App.';
+        }
+
+        if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+          return 'устройство не найдено. Подключи микрофон.';
+        }
+
+        if (name === 'NotReadableError' || name === 'TrackStartError') {
+          return 'микрофон занят другим приложением.';
+        }
+
+        if (name === 'SecurityError') {
+          return 'нужен защищенный контекст HTTPS.';
+        }
+
+        return message;
+      }
+    </script>
+  </body>
+</html>
